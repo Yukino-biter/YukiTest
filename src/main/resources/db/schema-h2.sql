@@ -1,0 +1,108 @@
+-- H2-compatible schema for YukiTest
+
+CREATE TABLE IF NOT EXISTS yuki_user (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    nickname VARCHAR(50) DEFAULT NULL,
+    status TINYINT NOT NULL DEFAULT 1,
+    api_provider VARCHAR(30) DEFAULT NULL,
+    api_key VARCHAR(512) DEFAULT NULL,
+    base_url VARCHAR(255) DEFAULT NULL,
+    api_model VARCHAR(80) DEFAULT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (username)
+);
+
+CREATE TABLE IF NOT EXISTS yuki_paper (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    level VARCHAR(2) NOT NULL,
+    paper_name VARCHAR(100) NOT NULL,
+    exam_minutes INT NOT NULL,
+    is_published TINYINT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (level, paper_name)
+);
+
+CREATE TABLE IF NOT EXISTS yuki_question_main (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    paper_id BIGINT NOT NULL,
+    level VARCHAR(2) NOT NULL,
+    section VARCHAR(20) NOT NULL,
+    title VARCHAR(100) DEFAULT NULL,
+    material TEXT DEFAULT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (paper_id) REFERENCES yuki_paper(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS yuki_question_item (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    main_id BIGINT NOT NULL,
+    content TEXT NOT NULL,
+    options CLOB NOT NULL,
+    correct_answer VARCHAR(1) NOT NULL,
+    sort_order INT NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (main_id) REFERENCES yuki_question_main(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS yuki_exam_attempt (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    paper_id BIGINT NOT NULL,
+    total_count INT NOT NULL,
+    correct_count INT NOT NULL,
+    score INT NOT NULL,
+    submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES yuki_user(id) ON DELETE CASCADE,
+    FOREIGN KEY (paper_id) REFERENCES yuki_paper(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS yuki_exam_answer (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    attempt_id BIGINT NOT NULL,
+    question_item_id BIGINT NOT NULL,
+    user_answer VARCHAR(1) NOT NULL,
+    correct_answer VARCHAR(1) NOT NULL,
+    is_correct TINYINT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (attempt_id, question_item_id),
+    FOREIGN KEY (attempt_id) REFERENCES yuki_exam_attempt(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_item_id) REFERENCES yuki_question_item(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS yuki_exam_draft (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    paper_id BIGINT NOT NULL,
+    answers CLOB DEFAULT NULL,
+    time_left INT DEFAULT NULL,
+    saved_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, paper_id),
+    FOREIGN KEY (user_id) REFERENCES yuki_user(id) ON DELETE CASCADE,
+    FOREIGN KEY (paper_id) REFERENCES yuki_paper(id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS yuki_user_wrong_book (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    question_item_id BIGINT NOT NULL,
+    user_answer VARCHAR(1) NOT NULL,
+    is_resolved TINYINT NOT NULL DEFAULT 0,
+    wrong_count INT NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, question_item_id),
+    FOREIGN KEY (user_id) REFERENCES yuki_user(id) ON DELETE CASCADE,
+    FOREIGN KEY (question_item_id) REFERENCES yuki_question_item(id) ON DELETE CASCADE
+);

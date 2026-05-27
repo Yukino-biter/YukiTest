@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: yuki-test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL:jdbc:mysql://localhost:3306/yuki_test?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&useSSL=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:}
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+      schema-locations: classpath:db/schema.sql
+      data-locations: classpath:db/data.sql
+
+server:
+  port: ${SERVER_PORT:8080}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+    db-config:
+      id-type: auto
+
+yuki:
+  ai:
+    default-base-url: ${AI_BASE_URL:https://api.deepseek.com/v1}
+    default-model: ${AI_MODEL:deepseek-chat}
+    stream-timeout-seconds: 120
+    max-concurrent-per-user: 3
+  jwt:
+    secret: ${JWT_SECRET:YukiTestJwtSecretKeyMustBeLongEnoughForHS256!!}
+    expiration-ms: 86400000
+  crypto:
+    secret-key: ${CRYPTO_KEY:YukiTestAesKeyMustBeExactly32B}
