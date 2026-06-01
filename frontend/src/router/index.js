@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useUserStore } from '../stores/user.js'
 
 const routes = [
   { path: '/login', name: 'login', component: () => import('../views/Login.vue'), meta: { public: true, hideNavbar: true } },
@@ -16,10 +17,21 @@ const router = createRouter({
   routes
 })
 
-router.beforeEach((to) => {
-  const token = localStorage.getItem('yuki_token')
-  if (!to.meta.public && !token) {
+let validated = false
+
+router.beforeEach(async (to) => {
+  if (to.meta.public) return
+
+  const userStore = useUserStore()
+
+  if (!userStore.token) {
     return { name: 'login' }
+  }
+
+  if (!validated) {
+    const ok = await userStore.validateToken()
+    validated = true
+    if (!ok) return { name: 'login' }
   }
 })
 

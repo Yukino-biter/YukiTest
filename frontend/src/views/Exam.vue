@@ -182,25 +182,21 @@ function handleKeydown(e) {
 
   const key = e.key
 
-  // Navigation: Arrow keys or A/D
-  if (key === 'ArrowLeft' || key === 'a' || key === 'A') {
+  // Navigation: Arrow keys only
+  if (key === 'ArrowLeft') {
     e.preventDefault()
     prevSub()
-  } else if (key === 'ArrowRight' || key === 'd' || key === 'D') {
+  } else if (key === 'ArrowRight') {
     e.preventDefault()
     nextSub()
   }
 
-  // Option selection: 1-4
+  // Option selection: 1-4 directly maps to option keys "1","2","3","4"
   if (!currentItem.value || !currentItem.value.options) return
   const optionKeys = Object.keys(currentItem.value.options)
-  const numMap = { '1': 0, '2': 1, '3': 2, '4': 3 }
-  if (key in numMap) {
-    const idx = numMap[key]
-    if (idx < optionKeys.length) {
-      e.preventDefault()
-      selectAnswer(currentItem.value.id, optionKeys[idx])
-    }
+  if (optionKeys.includes(key)) {
+    e.preventDefault()
+    selectAnswer(currentItem.value.id, key)
   }
 }
 

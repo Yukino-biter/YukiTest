@@ -53,6 +53,14 @@ public class YukiUserService {
         return new LoginResponse(token, user.getId(), user.getNickname());
     }
 
+    public YukiUser getById(Long userId) {
+        YukiUser user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new ResourceNotFoundException("用户不存在：" + userId);
+        }
+        return user;
+    }
+
     @Transactional(rollbackFor = Exception.class)
     public YukiUser updateAiConfig(Long userId, UpdateAiConfigRequest request) {
         YukiUser user = userMapper.selectById(userId);

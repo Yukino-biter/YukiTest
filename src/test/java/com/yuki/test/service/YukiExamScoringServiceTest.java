@@ -41,8 +41,8 @@ class YukiExamScoringServiceTest {
         main.setPaperId(11L);
         when(questionMainMapper.selectBatchIds(anyCollection())).thenReturn(List.of(main));
 
-        YukiQuestionItem first = item(1L, 100L, "A");
-        YukiQuestionItem second = item(2L, 100L, "C");
+        YukiQuestionItem first = item(1L, 100L, "1");
+        YukiQuestionItem second = item(2L, 100L, "3");
         when(itemMapper.selectBatchIds(anyCollection())).thenReturn(List.of(first, second));
         doAnswer(invocation -> {
             invocation.getArgument(0, com.yuki.test.entity.YukiExamAttempt.class).setId(99L);
@@ -56,8 +56,8 @@ class YukiExamScoringServiceTest {
         request.setUserId(7L);
         request.setPaperId(11L);
         request.setAnswers(List.of(
-                new ExamSubmitRequest.AnswerItem(1L, "a"),
-                new ExamSubmitRequest.AnswerItem(2L, "B")
+                new ExamSubmitRequest.AnswerItem(1L, "1"),
+                new ExamSubmitRequest.AnswerItem(2L, "2")
         ));
 
         var response = service.submit(request);
@@ -68,7 +68,7 @@ class YukiExamScoringServiceTest {
         assertThat(response.getWrong()).isEqualTo(1);
         assertThat(response.getScore()).isEqualTo(50);
 
-        verify(wrongBookMapper).upsertWrongQuestion(7L, 2L, "B");
+        verify(wrongBookMapper).upsertWrongQuestion(7L, 2L, "2");
         ArgumentCaptor<com.yuki.test.entity.YukiExamAnswer> answerCaptor =
                 ArgumentCaptor.forClass(com.yuki.test.entity.YukiExamAnswer.class);
         verify(answerMapper, times(2)).insert(answerCaptor.capture());

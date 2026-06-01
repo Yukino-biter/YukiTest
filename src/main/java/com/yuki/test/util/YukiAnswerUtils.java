@@ -16,8 +16,8 @@ public final class YukiAnswerUtils {
 
     public static void requireOption(String answer) {
         String normalized = normalize(answer);
-        if (!normalized.matches("[ABCD]")) {
-            throw new IllegalArgumentException("答案必须是 A/B/C/D");
+        if (!normalized.matches("[1234]")) {
+            throw new IllegalArgumentException("答案必须是 1/2/3/4");
         }
     }
 }

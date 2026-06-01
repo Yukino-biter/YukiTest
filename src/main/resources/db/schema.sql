@@ -51,8 +51,8 @@ CREATE TABLE IF NOT EXISTS yuki_question_item (
     id BIGINT PRIMARY KEY AUTO_INCREMENT COMMENT 'Question item ID',
     main_id BIGINT NOT NULL COMMENT 'Question group ID',
     content TEXT NOT NULL COMMENT 'Question content',
-    options JSON NOT NULL COMMENT 'Options JSON, e.g. {"A":"...","B":"..."}',
-    correct_answer VARCHAR(1) NOT NULL COMMENT 'Correct answer: A/B/C/D',
+    options JSON NOT NULL COMMENT 'Options JSON, e.g. {"1":"...","2":"..."}',
+    correct_answer VARCHAR(1) NOT NULL COMMENT 'Correct answer: 1/2/3/4',
     sort_order INT NOT NULL DEFAULT 0 COMMENT 'Sort order',
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS yuki_question_item (
     CONSTRAINT fk_yuki_question_item_main
         FOREIGN KEY (main_id) REFERENCES yuki_question_main(id)
         ON DELETE CASCADE,
-    CONSTRAINT chk_yuki_question_item_answer CHECK (correct_answer IN ('A', 'B', 'C', 'D'))
+    CONSTRAINT chk_yuki_question_item_answer CHECK (correct_answer IN ('1', '2', '3', '4'))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='JLPT question items';
 
 CREATE TABLE IF NOT EXISTS yuki_exam_attempt (
@@ -100,8 +100,8 @@ CREATE TABLE IF NOT EXISTS yuki_exam_answer (
     CONSTRAINT fk_yuki_exam_answer_item
         FOREIGN KEY (question_item_id) REFERENCES yuki_question_item(id)
         ON DELETE CASCADE,
-    CONSTRAINT chk_yuki_exam_answer_user_answer CHECK (user_answer IN ('A', 'B', 'C', 'D')),
-    CONSTRAINT chk_yuki_exam_answer_correct_answer CHECK (correct_answer IN ('A', 'B', 'C', 'D')),
+    CONSTRAINT chk_yuki_exam_answer_user_answer CHECK (user_answer IN ('1', '2', '3', '4')),
+    CONSTRAINT chk_yuki_exam_answer_correct_answer CHECK (correct_answer IN ('1', '2', '3', '4')),
     CONSTRAINT chk_yuki_exam_answer_correct CHECK (is_correct IN (0, 1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Exam answer details';
 
@@ -141,6 +141,6 @@ CREATE TABLE IF NOT EXISTS yuki_user_wrong_book (
     CONSTRAINT fk_yuki_wrong_item
         FOREIGN KEY (question_item_id) REFERENCES yuki_question_item(id)
         ON DELETE CASCADE,
-    CONSTRAINT chk_yuki_wrong_answer CHECK (user_answer IN ('A', 'B', 'C', 'D')),
+    CONSTRAINT chk_yuki_wrong_answer CHECK (user_answer IN ('1', '2', '3', '4')),
     CONSTRAINT chk_yuki_wrong_resolved CHECK (is_resolved IN (0, 1))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='User wrong book';

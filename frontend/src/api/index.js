@@ -73,5 +73,6 @@ export const api = {
   getStats: () => request('GET', '/stats'),
 
   // User
+  getMe:         ()      => request('GET',  '/user/me'),
   updateAiConfig: (body) => request('POST', '/user/update-ai-config', body),
 }

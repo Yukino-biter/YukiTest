@@ -11,6 +11,7 @@ import com.yuki.test.service.YukiUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,6 +33,13 @@ public class YukiUserController {
     @PostMapping("/login")
     public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return ApiResponse.ok(userService.login(request));
+    }
+
+    @GetMapping("/me")
+    public ApiResponse<java.util.Map<String, Object>> me(HttpServletRequest httpRequest) {
+        Long userId = (Long) httpRequest.getAttribute(AuthInterceptor.CURRENT_USER_ID);
+        var user = userService.getById(userId);
+        return ApiResponse.ok(java.util.Map.of("userId", user.getId(), "nickname", user.getNickname() != null ? user.getNickname() : ""));
     }
 
     @PostMapping("/update-ai-config")
